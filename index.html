@@ -1,350 +1,560 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Quote Genie</title>
   <style>
     :root{
-      --bg1:#EAF6FF;
-      --bg2:#F7FFF0;
+      --bg1:#bfe9ff;
+      --bg2:#e9f8ff;
       --card:#ffffff;
-      --ink:#0B1B3A;
-      --muted:rgba(11,27,58,.65);
-      --line:rgba(11,27,58,.10);
-      --primary:#2D6BFF;
-      --primary2:#1FCB7C;
-      --shadow:0 18px 45px rgba(11,27,58,.12);
-      --r:18px;
+      --ink:#0b1b2b;
+      --muted:#5b6b7a;
+      --line:rgba(11,27,43,.12);
+      --shadow:0 16px 40px rgba(0,0,0,.10);
+      --radius:22px;
+      --btn1:#2a62ff;
+      --btn2:#25c06d;
+      --chip:#fff7dd;
+      --chipLine:#f2d38a;
     }
     *{box-sizing:border-box}
     body{
       margin:0;
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
       color:var(--ink);
-      background:
-        radial-gradient(900px 600px at 12% 12%, rgba(45,107,255,.18), transparent 55%),
-        radial-gradient(900px 650px at 90% 10%, rgba(31,203,124,.18), transparent 60%),
-        linear-gradient(180deg, var(--bg1), var(--bg2));
+      background: linear-gradient(180deg,var(--bg1),var(--bg2));
       min-height:100vh;
+      display:flex;
+      justify-content:center;
     }
-    .wrap{max-width:860px; margin:0 auto; padding:18px 14px 80px;}
-    .top{
-      display:flex; align-items:center; justify-content:space-between;
-      gap:12px; padding:10px 4px 14px;
+    .wrap{
+      width:min(860px, 100%);
+      padding:18px 14px 22px;
+    }
+    /* Top Bar */
+    .topbar{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      padding:8px 6px 14px;
     }
     .brand{
-      display:flex; align-items:center; gap:10px;
-      font-weight:900; letter-spacing:.2px;
-      font-size:18px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:170px;
     }
-    .lamp{
-      width:38px; height:38px; border-radius:14px;
-      display:grid; place-items:center;
-      background:rgba(45,107,255,.10);
-      border:1px solid rgba(45,107,255,.18);
-      box-shadow:0 10px 24px rgba(45,107,255,.12);
-      font-size:20px;
-    }
-
-    /* progress */
-    .progressWrap{
-      flex:1; display:flex; align-items:center; justify-content:flex-end; gap:10px;
-    }
-    .stepText{font-size:12.5px; color:var(--muted); font-weight:800;}
-    .bar{
-      width:min(340px, 52vw);
-      height:12px;
-      border-radius:999px;
-      background:rgba(11,27,58,.08);
+    .logo{
+      width:44px;height:44px;border-radius:14px;
+      background: rgba(255,255,255,.55);
+      border: 1px solid rgba(255,255,255,.7);
+      display:grid;place-items:center;
+      box-shadow: 0 10px 20px rgba(0,0,0,.06);
       overflow:hidden;
-      border:1px solid rgba(11,27,58,.08);
     }
-    .bar > div{
+    .brand h1{
+      font-size:22px;
+      margin:0;
+      line-height:1.05;
+      letter-spacing:-.2px;
+    }
+    .stepText{
+      font-weight:700;
+      color:var(--muted);
+      margin-left:6px;
+      white-space:nowrap;
+    }
+    .progress{
+      flex:1;
+      height:14px;
+      border-radius:999px;
+      background: rgba(255,255,255,.55);
+      border: 1px solid rgba(255,255,255,.7);
+      overflow:hidden;
+      box-shadow: 0 10px 20px rgba(0,0,0,.05);
+    }
+    .progress > div{
       height:100%;
       width:0%;
-      background:linear-gradient(90deg, var(--primary), var(--primary2));
       border-radius:999px;
-      transition:width .22s ease;
+      background: linear-gradient(90deg,var(--btn1),var(--btn2));
+      transition: width .35s ease;
     }
 
-    .panel{
+    /* Main Card */
+    .card{
       background:var(--card);
-      border:1px solid var(--line);
-      border-radius:22px;
-      box-shadow:var(--shadow);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border:1px solid rgba(255,255,255,.7);
+      padding:20px 18px 18px;
+      position:relative;
       overflow:hidden;
     }
-    .page{
-      display:none;
-      padding:22px 18px 18px;
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-120px -120px auto auto;
+      width:220px;height:220px;
+      background: radial-gradient(circle at 30% 30%, rgba(42,98,255,.25), transparent 60%);
+      pointer-events:none;
     }
-    .page.active{display:block;}
-    .kicker{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:8px 10px; border-radius:999px;
-      background:rgba(31,203,124,.10);
-      border:1px solid rgba(31,203,124,.20);
-      font-size:12.5px;
-      font-weight:900;
-      color:rgba(11,27,58,.78);
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 14px;
+      border-radius:999px;
+      background: var(--chip);
+      border:1px solid var(--chipLine);
+      font-weight:800;
+      color:#3b2a00;
+      letter-spacing:-.1px;
     }
-    .wishPill{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:8px 10px; border-radius:999px;
-      background:rgba(245,200,75,.18);
-      border:1px solid rgba(245,200,75,.30);
-      font-size:12.5px;
-      font-weight:950;
-      color:rgba(11,27,58,.78);
-    }
-    h1{
+    .title{
       margin:14px 0 6px;
-      font-size:34px;
+      font-size:42px;
       line-height:1.05;
-      letter-spacing:-.6px;
+      letter-spacing:-1px;
     }
-    .sub{
-      margin:0 0 14px;
-      font-size:16px;
+    .subtitle{
+      margin:0 0 16px;
       color:var(--muted);
-      line-height:1.35;
+      font-size:16px;
+      line-height:1.5;
       max-width:62ch;
     }
 
-    /* tiles */
-    .grid{
-      display:grid;
-      grid-template-columns:1fr;
+    /* Options */
+    .options{
+      display:flex;
+      flex-direction:column;
       gap:12px;
-      margin-top:14px;
+      margin-top:12px;
     }
-    @media(min-width:720px){
-      .grid.two{grid-template-columns:1fr 1fr;}
-      .grid.three{grid-template-columns:1fr 1fr 1fr;}
-    }
-    .tile{
-      display:flex; align-items:center; gap:12px;
+    .option{
+      display:flex;
+      gap:14px;
+      align-items:center;
       padding:14px 14px;
-      border-radius:16px;
-      border:1px solid rgba(11,27,58,.12);
-      background:rgba(255,255,255,.95);
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:#fff;
       cursor:pointer;
-      transition:transform .08s ease, border-color .12s ease, box-shadow .12s ease;
       user-select:none;
-      position:relative;
+      transition: transform .08s ease, box-shadow .08s ease, border-color .12s ease;
     }
-    .tile:active{transform:scale(.99)}
-    .tile:hover{border-color:rgba(45,107,255,.35); box-shadow:0 14px 28px rgba(45,107,255,.10);}
-    .tile.selected{
-      border-color:rgba(45,107,255,.65);
-      box-shadow:0 14px 30px rgba(45,107,255,.16);
-      background:linear-gradient(180deg, rgba(45,107,255,.08), rgba(31,203,124,.06));
-    }
-    .tile.selected::after{
-      content:"✓";
-      position:absolute;
-      top:10px; right:12px;
-      width:24px; height:24px;
-      border-radius:999px;
-      display:grid; place-items:center;
-      background:rgba(31,203,124,.16);
-      border:1px solid rgba(31,203,124,.35);
-      font-weight:950;
-      color:rgba(11,27,58,.82);
-      font-size:14px;
-    }
-    .ico{
-      width:46px; height:46px; border-radius:16px;
-      display:grid; place-items:center;
-      background:rgba(45,107,255,.10);
-      border:1px solid rgba(45,107,255,.18);
-      font-size:22px;
+    .option:active{ transform: scale(.99); }
+    .option .icon{
+      width:54px;height:54px;border-radius:18px;
+      background: rgba(42,98,255,.08);
+      border:1px solid rgba(42,98,255,.15);
+      display:grid;place-items:center;
+      font-size:26px;
       flex:0 0 auto;
     }
-    .tTitle{font-weight:950; margin:0; font-size:15.5px;}
-    .tDesc{margin:3px 0 0; font-size:13px; color:var(--muted); line-height:1.25;}
-
-    /* bottom CTA */
-    .footer{
-      position:sticky; bottom:0;
-      padding:14px;
-      background:linear-gradient(180deg, rgba(234,246,255,0), rgba(234,246,255,.85) 25%, rgba(234,246,255,.98));
-      backdrop-filter:saturate(120%) blur(6px);
-    }
-    .ctaRow{
-      display:flex; gap:10px; align-items:center; justify-content:space-between;
-      max-width:860px; margin:0 auto;
-    }
-    .btn{
-      border:none; border-radius:16px;
-      padding:14px 16px;
-      font-weight:950;
-      cursor:pointer;
-      font-size:15.5px;
-    }
-    .btn.primary{
+    .option .txt{
       flex:1;
-      background:linear-gradient(90deg, var(--primary), var(--primary2));
-      color:white;
-      box-shadow:0 18px 36px rgba(45,107,255,.18);
+      min-width:0;
     }
-    .btn.primary:disabled{opacity:.45; cursor:not-allowed; box-shadow:none;}
-    .btn.ghost{
-      background:rgba(255,255,255,.9);
-      border:1px solid rgba(11,27,58,.14);
-      color:rgba(11,27,58,.8);
+    .option .txt b{
+      display:block;
+      font-size:18px;
+      letter-spacing:-.2px;
+      margin-bottom:2px;
+    }
+    .option .txt span{
+      display:block;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.25;
+    }
+    .check{
+      width:34px;height:34px;border-radius:12px;
+      border:1px solid rgba(37,192,109,.25);
+      background: rgba(37,192,109,.10);
+      display:grid;place-items:center;
+      opacity:0;
+      transform: scale(.9);
+      transition: opacity .12s ease, transform .12s ease;
+      flex:0 0 auto;
+    }
+    .option.selected{
+      border-color: rgba(42,98,255,.35);
+      box-shadow: 0 10px 22px rgba(0,0,0,.06);
+      background: linear-gradient(180deg, #ffffff, #fbfdff);
+    }
+    .option.selected .check{
+      opacity:1;
+      transform: scale(1);
+    }
+
+    /* Bottom Nav */
+    .nav{
+      position:sticky;
+      bottom:10px;
+      margin-top:14px;
+      display:flex;
+      gap:12px;
+      padding:12px;
+      border-radius:18px;
+      background: rgba(255,255,255,.75);
+      border:1px solid rgba(255,255,255,.9);
+      box-shadow: 0 16px 40px rgba(0,0,0,.10);
+      backdrop-filter: blur(10px);
+    }
+    button{
+      border:none;
+      font-weight:800;
+      font-size:18px;
+      border-radius:18px;
+      padding:14px 16px;
+      cursor:pointer;
+    }
+    .btn-secondary{
+      background:#fff;
+      border:1px solid var(--line);
+      color: var(--ink);
       min-width:120px;
     }
-
-    .miniNote{margin-top:12px; font-size:12.5px; color:var(--muted); font-weight:750;}
-    .quoteBox{
-      margin-top:14px;
-      padding:14px 14px;
-      border-radius:16px;
-      border:1px solid rgba(11,27,58,.10);
-      background:linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.78));
+    .btn-primary{
+      flex:1;
+      color:#fff;
+      background: linear-gradient(90deg,var(--btn1),var(--btn2));
+      box-shadow: 0 14px 28px rgba(42,98,255,.18);
     }
-    .quoteLine{
-      font-size:15px;
-      font-weight:950;
+    .btn-primary:disabled{
+      opacity:.55;
+      filter:saturate(.7);
+      cursor:not-allowed;
+      box-shadow:none;
+    }
+
+    /* Screens */
+    .screen{ display:none; }
+    .screen.active{ display:block; }
+
+    /* Welcome screen specifics */
+    .welcomeGrid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:14px;
+      padding-top:10px;
+    }
+    .heroRow{
+      display:flex;
+      gap:14px;
+      align-items:flex-start;
+      flex-wrap:wrap;
+    }
+    .lampCard{
+      flex: 0 0 150px;
+      height:150px;
+      border-radius:22px;
+      background: rgba(42,98,255,.08);
+      border:1px solid rgba(42,98,255,.18);
+      display:grid;
+      place-items:center;
+      position:relative;
+      overflow:hidden;
+    }
+    .lampCard::after{
+      content:"";
+      position:absolute;
+      inset:auto -40px -40px auto;
+      width:140px;height:140px;
+      background: radial-gradient(circle at 30% 30%, rgba(37,192,109,.25), transparent 65%);
+    }
+    .lamp{
+      font-size:62px;
+      filter: drop-shadow(0 10px 12px rgba(0,0,0,.10));
+    }
+    .welcomeCopy{
+      flex: 1 1 260px;
+      min-width:260px;
+    }
+    .welcomeTitle{
+      margin:8px 0 6px;
+      font-size:40px;
+      line-height:1.05;
+      letter-spacing:-1px;
+    }
+    .welcomeSub{
+      margin:0;
+      color:var(--muted);
+      font-size:16px;
+      line-height:1.5;
+      max-width:62ch;
+    }
+    .miniBullets{
+      margin:14px 0 0;
+      padding:0;
+      list-style:none;
+      display:grid;
+      gap:10px;
+    }
+    .miniBullets li{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      padding:12px 12px;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:#fff;
+    }
+    .spark{
+      width:34px;height:34px;border-radius:14px;
+      display:grid;place-items:center;
+      background: rgba(37,192,109,.10);
+      border:1px solid rgba(37,192,109,.18);
+      flex:0 0 auto;
+    }
+    .miniBullets b{
+      display:block;
+      margin-bottom:2px;
       letter-spacing:-.2px;
     }
-    .quoteSub{margin-top:4px; color:var(--muted); font-size:13.5px; line-height:1.25;}
+    .miniBullets span{
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.25;
+      display:block;
+    }
+
+    @media (max-width:520px){
+      .title, .welcomeTitle{ font-size:36px; }
+      .brand h1{ font-size:20px; }
+      .stepText{ font-size:14px; }
+    }
   </style>
 </head>
 
 <body>
   <div class="wrap">
-    <div class="top">
+
+    <div class="topbar">
       <div class="brand">
-        <div class="lamp" aria-hidden="true">🪔</div>
-        <div>Quote Genie</div>
+        <div class="logo" aria-hidden="true">🧞‍♂️</div>
+        <h1>Quote<br/>Genie</h1>
       </div>
 
-      <div class="progressWrap">
-        <div class="stepText" id="stepText">Step 2 of 3</div>
-        <div class="bar" aria-label="Progress">
-          <div id="barFill"></div>
-        </div>
+      <div class="stepText" id="stepText">Step 1 of 3</div>
+
+      <div class="progress" aria-label="progress">
+        <div id="progressFill"></div>
       </div>
     </div>
 
-    <div class="panel">
-      <!-- PAGE 2: WHY -->
-      <section class="page active" id="page-why">
-        <div class="wishPill">🪄 “I wished this were easier.”</div>
-        <h1>What’s the occasion?</h1>
-        <p class="sub">
-          Take one second and tell me <b>why</b> you’re doing this.
-          I’ll use it to suggest smart add-ons (like scarves for a ski trip, or Hawaiian shirts for theme travel).
+    <div class="card">
+
+      <!-- SCREEN 1: WELCOME -->
+      <section class="screen active" id="screen1">
+        <div class="welcomeGrid">
+          <div class="heroRow">
+            <div class="lampCard" aria-hidden="true">
+              <div class="lamp">🪔</div>
+            </div>
+
+            <div class="welcomeCopy">
+              <div class="pill">✨ “Because you deserve unlimited wishes.”</div>
+              <h2 class="welcomeTitle">Let the genie out of the lamp — let’s go.</h2>
+              <p class="welcomeSub">
+                Answer a couple quick questions and I’ll build a clean quote request
+                you can send to your decorator — plus smart add-ons you might not have thought of.
+              </p>
+
+              <ul class="miniBullets">
+                <li>
+                  <div class="spark">⚡️</div>
+                  <div>
+                    <b>Fast</b>
+                    <span>Less typing. More “send it.”</span>
+                  </div>
+                </li>
+                <li>
+                  <div class="spark">🎯</div>
+                  <div>
+                    <b>Accurate</b>
+                    <span>We capture the details that change pricing.</span>
+                  </div>
+                </li>
+                <li>
+                  <div class="spark">🧠</div>
+                  <div>
+                    <b>Helpful add-ons</b>
+                    <span>Like scarves for a ski trip… or spirit towels for game day.</span>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="nav">
+          <button class="btn-secondary" id="back1" disabled>Back</button>
+          <button class="btn-primary" id="startBtn">Let’s go →</button>
+        </div>
+      </section>
+
+      <!-- SCREEN 2: OCCASION -->
+      <section class="screen" id="screen2">
+        <div class="pill">🪄 “I wished this were easier.”</div>
+        <h2 class="title">What’s the occasion?</h2>
+        <p class="subtitle">
+          Take one second and tell me <b>why</b> you’re doing this. I’ll use it to suggest smart add-ons
+          (like scarves for a ski trip, or Hawaiian shirts for theme travel).
         </p>
 
-        <div class="grid two" id="whyGrid">
-          <div class="tile" data-why="concert"><div class="ico">🎵</div><div><div class="tTitle">Concert / Performance</div><div class="tDesc">Stage-ready gear + parent shirts.</div></div></div>
-          <div class="tile" data-why="spirit"><div class="ico">🏈</div><div><div class="tTitle">Spirit Wear / Game Day</div><div class="tDesc">Fans, boosters, teams, stores.</div></div></div>
-          <div class="tile" data-why="travel"><div class="ico">🚌</div><div><div class="tTitle">Field Trip / Travel</div><div class="tDesc">Easy group ID + add-ons.</div></div></div>
-          <div class="tile" data-why="grad"><div class="ico">🎓</div><div><div class="tTitle">Graduation / Seniors</div><div class="tDesc">Senior shirts, packs, week gear.</div></div></div>
-          <div class="tile" data-why="event"><div class="ico">🎉</div><div><div class="tTitle">Event / Fundraiser</div><div class="tDesc">Volunteers, sponsors, participants.</div></div></div>
-          <div class="tile" data-why="bridal"><div class="ico">💍</div><div><div class="tTitle">Bridal Party / Wedding Weekend</div><div class="tDesc">Smaller qty, premium options.</div></div></div>
-          <div class="tile" data-why="staff"><div class="ico">🏫</div><div><div class="tTitle">Staff / Faculty Apparel</div><div class="tDesc">Polos, quarter-zips, extras.</div></div></div>
-          <div class="tile" data-why="reunion"><div class="ico">👨‍👩‍👧</div><div><div class="tTitle">Reunion / Alumni</div><div class="tDesc">Keepsakes + comfort options.</div></div></div>
-          <div class="tile" data-why="theme"><div class="ico">🌺</div><div><div class="tTitle">Theme Trip / Costume Vibe</div><div class="tDesc">Hawaiian, neon, 80s, etc.</div></div></div>
-          <div class="tile" data-why="cold"><div class="ico">🏔️</div><div><div class="tTitle">Cold Weather / Ski Trip</div><div class="tDesc">Beanies, scarves, hoodies.</div></div></div>
-          <div class="tile" data-why="reorder"><div class="ico">🔁</div><div><div class="tTitle">Reorder / Replacement</div><div class="tDesc">Match a previous order.</div></div></div>
-          <div class="tile" data-why="other"><div class="ico">✨</div><div><div class="tTitle">Something Else</div><div class="tDesc">We’ll still get it done fast.</div></div></div>
+        <div class="options" id="occasionList">
+          <div class="option" data-value="Concert / Performance">
+            <div class="icon">🎵</div>
+            <div class="txt">
+              <b>Concert / Performance</b>
+              <span>Stage-ready gear + parent shirts.</span>
+            </div>
+            <div class="check">✓</div>
+          </div>
+
+          <div class="option" data-value="Spirit Wear / Game Day">
+            <div class="icon">🏈</div>
+            <div class="txt">
+              <b>Spirit Wear / Game Day</b>
+              <span>Fans, boosters, teams, stores.</span>
+            </div>
+            <div class="check">✓</div>
+          </div>
+
+          <div class="option" data-value="Field Trip / Travel">
+            <div class="icon">🚌</div>
+            <div class="txt">
+              <b>Field Trip / Travel</b>
+              <span>Easy group ID + add-ons.</span>
+            </div>
+            <div class="check">✓</div>
+          </div>
+
+          <div class="option" data-value="Organization / Staff">
+            <div class="icon">🏫</div>
+            <div class="txt">
+              <b>Organization / Staff</b>
+              <span>Staff polos, jackets, name tags.</span>
+            </div>
+            <div class="check">✓</div>
+          </div>
+
+          <div class="option" data-value="Club / Booster / Fundraiser">
+            <div class="icon">⭐️</div>
+            <div class="txt">
+              <b>Club / Booster / Fundraiser</b>
+              <span>Raise money, recruit, build hype.</span>
+            </div>
+            <div class="check">✓</div>
+          </div>
+
+          <div class="option" data-value="Other / Surprise Me">
+            <div class="icon">🎁</div>
+            <div class="txt">
+              <b>Other / Surprise Me</b>
+              <span>Bridal party? Corporate event? Tell me later.</span>
+            </div>
+            <div class="check">✓</div>
+          </div>
         </div>
 
-        <div class="quoteBox" id="genieBox" style="display:none;">
-          <div class="quoteLine" id="genieLine">Genie says…</div>
-          <div class="quoteSub" id="genieSub"></div>
+        <div class="nav">
+          <button class="btn-secondary" id="back2">Back</button>
+          <button class="btn-primary" id="continue2" disabled>Continue →</button>
         </div>
-
-        <div class="miniNote">Next: we’ll ask <b>when you need it in-hands</b> — one question at a time.</div>
       </section>
-    </div>
-  </div>
 
-  <div class="footer">
-    <div class="ctaRow">
-      <button class="btn ghost" id="backBtn" type="button">Back</button>
-      <button class="btn primary" id="nextBtn" type="button" disabled>Continue →</button>
+      <!-- SCREEN 3: Placeholder (so step tracker makes sense) -->
+      <section class="screen" id="screen3">
+        <div class="pill">🧞‍♂️ Step 3 is next</div>
+        <h2 class="title">What are we making?</h2>
+        <p class="subtitle">
+          This is a placeholder screen so your “Step 1 / Step 2 / Step 3” flow is wired correctly.
+          Next we’ll add garments, quantities, decoration method, and file upload.
+        </p>
+
+        <div class="nav">
+          <button class="btn-secondary" id="back3">Back</button>
+          <button class="btn-primary" id="doneBtn">All set →</button>
+        </div>
+      </section>
+
     </div>
   </div>
 
   <script>
-    // This file is PAGE 2 ONLY (Why / Occasion).
-    // If you're keeping the single-file wizard, paste this <section> into index.html
-    // and wire state.step accordingly. If you're using multi-page, keep as-is.
+    // --- State ---
+    let step = 1; // MUST start at 1 (welcome)
 
     const state = {
-      why: "",
+      occasion: null
     };
 
-    const hints = {
-      concert: ["Great choice.", "I’ll suggest performance-friendly options (and parent shirts if you want)."],
-      spirit: ["Let’s go.", "We can bundle fan gear and keep sizes easy."],
-      travel: ["Travel day approved.", "I’ll suggest add-ons like bags, hats, and easy-to-spot colors."],
-      grad: ["Senior energy.", "We can do class packs or name personalization."],
-      event: ["Event mode.", "We can include volunteer shirts and sponsor add-ons."],
-      bridal: ["Wedding weekend!", "Premium garments + small-qty-friendly decoration."],
-      staff: ["Staff uniform vibe.", "Polos and quarter-zips are usually the move."],
-      reunion: ["Reunion approved.", "Comfort-first garments + a keepsake design works great."],
-      theme: ["Theme unlocked.", "I’ll suggest fun items like Hawaiian shirts or bucket hats."],
-      cold: ["Cold weather.", "Beanies, scarves, hoodies — easy wins."],
-      reorder: ["Easy.", "We’ll try to match the last order as closely as possible."],
-      other: ["No problem.", "Tell me the basics and I’ll still grant a clean quote."]
-    };
-
+    // --- Elements ---
     const stepText = document.getElementById("stepText");
-    const barFill  = document.getElementById("barFill");
-    const whyGrid  = document.getElementById("whyGrid");
-    const nextBtn  = document.getElementById("nextBtn");
-    const backBtn  = document.getElementById("backBtn");
+    const progressFill = document.getElementById("progressFill");
 
-    const genieBox = document.getElementById("genieBox");
-    const genieLine= document.getElementById("genieLine");
-    const genieSub = document.getElementById("genieSub");
+    const screen1 = document.getElementById("screen1");
+    const screen2 = document.getElementById("screen2");
+    const screen3 = document.getElementById("screen3");
 
-    // Step 2 of 3 visual (you can adjust)
-    barFill.style.width = "50%";
+    const startBtn = document.getElementById("startBtn");
+    const back2 = document.getElementById("back2");
+    const continue2 = document.getElementById("continue2");
+    const back3 = document.getElementById("back3");
+    const doneBtn = document.getElementById("doneBtn");
 
-    function setSelected(value){
-      whyGrid.querySelectorAll(".tile").forEach(tile=>{
-        tile.classList.toggle("selected", tile.getAttribute("data-why") === value);
+    // --- Helpers ---
+    function showStep(n){
+      step = n;
+
+      // screens
+      [screen1, screen2, screen3].forEach(s => s.classList.remove("active"));
+      if (n === 1) screen1.classList.add("active");
+      if (n === 2) screen2.classList.add("active");
+      if (n === 3) screen3.classList.add("active");
+
+      // top text + progress
+      stepText.textContent = `Step ${n} of 3`;
+      progressFill.style.width = `${Math.round((n/3)*100)}%`;
+
+      // scroll to top of card for better mobile UX
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // --- Welcome actions ---
+    startBtn.addEventListener("click", () => showStep(2));
+
+    // --- Step 2 selection logic ---
+    const options = Array.from(document.querySelectorAll("#occasionList .option"));
+    options.forEach(opt => {
+      opt.addEventListener("click", () => {
+        options.forEach(o => o.classList.remove("selected"));
+        opt.classList.add("selected");
+        state.occasion = opt.getAttribute("data-value");
+        continue2.disabled = !state.occasion;
       });
-    }
-
-    function showGenie(value){
-      const msg = hints[value];
-      if(!msg){ genieBox.style.display = "none"; return; }
-      genieBox.style.display = "block";
-      genieLine.textContent = `Genie says… ${msg[0]}`;
-      genieSub.textContent = msg[1];
-    }
-
-    whyGrid.addEventListener("click", (e)=>{
-      const tile = e.target.closest(".tile");
-      if(!tile) return;
-      state.why = tile.getAttribute("data-why") || "";
-      setSelected(state.why);
-      showGenie(state.why);
-      nextBtn.disabled = !state.why;
     });
 
-    // Multi-page placeholders:
-    backBtn.addEventListener("click", ()=>{
-      // If this is inside single-file wizard, call showStep(step-1)
-      // If multi-page:
-      window.history.back();
+    back2.addEventListener("click", () => showStep(1));
+    continue2.addEventListener("click", () => showStep(3));
+
+    // --- Step 3 nav ---
+    back3.addEventListener("click", () => showStep(2));
+    doneBtn.addEventListener("click", () => {
+      alert(
+        "Saved (for now)!\n\nOccasion: " + (state.occasion || "—") +
+        "\n\nNext: we’ll build the garment + decoration details screen."
+      );
     });
 
-    nextBtn.addEventListener("click", ()=>{
-      // If single-file wizard, advance to the next step.
-      // If multi-page, navigate to your "in-hands date" page:
-      const qs = new URLSearchParams({ why: state.why }).toString();
-      window.location.href = `when.html?${qs}`;
-    });
+    // init
+    showStep(1);
   </script>
 </body>
 </html>
